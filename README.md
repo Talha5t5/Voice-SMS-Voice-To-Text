@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
@@ -95,3 +96,37 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+=======
+# VoicetoText
+
+**VoicetoText** is an AI-powered React Native application that helps users interact with their device using their voice. The app supports:
+
+## 🔑 Features
+
+- 🎙️ **Voice to Text** – Convert spoken words to text quickly.
+- 🤖 **Voice Chat (AI)** – Integrated with Botpress for intelligent AI conversations.
+- 🔍 **Voice Search** – Search using speech.
+- 🌍 **Translation** – Translate recognized speech into different languages.
+- 🎤 **Voice Recording** – Record and manage audio files.
+- 📝 **Notes** – Save transcribed speech or chat outputs as notes.
+
+## 🚀 Technologies Used
+
+- React Native
+- Kotlin & Java (Native Modules)
+- Gradle
+- Botpress (AI Integration)
+- Google AdMob (for monetization)
+
+## 📦 APK & AAB
+
+- Supports APK and AAB builds for Play Store deployment.
+- Signed with custom keystore
+
+## 🔒 Permissions Required
+
+- Internet
+- Record Audio
+- Read/Write Storage
+- Bluetooth
+>>>>>>> 87b33a30c3a0f9c5de4fee9130beddc6e31cf978
