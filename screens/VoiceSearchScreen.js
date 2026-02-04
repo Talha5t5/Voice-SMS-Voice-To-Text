@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import BannerAdComponent from '../services/BannerAdComponent';
 
 const platforms = {
   communication: {
@@ -58,6 +59,7 @@ const platforms = {
 };
 
 const VoiceSearchScreen = ({ navigation }) => {
+
   const handlePlatformPress = (platform) => {
     navigation.navigate('SearchInput', { platform });
   };
@@ -102,6 +104,10 @@ const VoiceSearchScreen = ({ navigation }) => {
       <ScrollView style={styles.content}>
         {Object.values(platforms).map(section => renderPlatformSection(section))}
       </ScrollView>
+
+      <View style={styles.adContainer}>
+        <BannerAdComponent/>
+      </View>
     </SafeAreaView>
   );
 };
@@ -184,6 +190,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
   },
+  adContainer: {
+    alignItems: 'center',
+    paddingBottom: 8,
+  },
 });
 
-export default VoiceSearchScreen; 
+export default VoiceSearchScreen;

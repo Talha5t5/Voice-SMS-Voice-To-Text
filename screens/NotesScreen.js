@@ -11,6 +11,7 @@ import {
   Share,
   Modal
 } from 'react-native';
+import BannerAdComponent from '../services/BannerAdComponent';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -21,13 +22,12 @@ const NotesScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadNotes();
-    
-    // Listen for new notes from VoiceToText screen
-    const unsubscribe = navigation.addListener('focus', () => {
+
+    const unsubscribeFocus = navigation.addListener('focus', () => {
       loadNotes();
     });
 
-    return unsubscribe;
+    return unsubscribeFocus;
   }, [navigation]);
 
   const loadNotes = async () => {
@@ -95,15 +95,12 @@ const NotesScreen = ({ navigation }) => {
 
   const handleDelete = async () => {
     if (!selectedNote) return;
-    
+
     Alert.alert(
       'Delete Note',
       'Are you sure you want to delete this note?',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
@@ -125,7 +122,7 @@ const NotesScreen = ({ navigation }) => {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Image
-        source={require('./assets/no-data.jpg')} // Make sure to add this image
+        source={require('./assets/no-data.jpg')}
         style={styles.emptyImage}
         resizeMode="contain"
       />
@@ -177,6 +174,11 @@ const NotesScreen = ({ navigation }) => {
         </View>
       </View>
 
+      <View style={styles.adContainer}>
+        <BannerAdComponent
+        />
+      </View>
+
       {notes.length === 0 ? (
         renderEmptyState()
       ) : (
@@ -207,34 +209,19 @@ const NotesScreen = ({ navigation }) => {
           onPress={() => setShowOptions(false)}
         >
           <View style={styles.optionsContainer}>
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleDuplicate}
-            >
+            <TouchableOpacity style={styles.optionItem} onPress={handleDuplicate}>
               <Icon name="content-copy" size={20} color="#333" />
               <Text style={styles.optionText}>Duplicate</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleShare}
-            >
+            <TouchableOpacity style={styles.optionItem} onPress={handleShare}>
               <Icon name="share-variant" size={20} color="#333" />
               <Text style={styles.optionText}>Share</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handlePin}
-            >
+            <TouchableOpacity style={styles.optionItem} onPress={handlePin}>
               <Icon name="pin" size={20} color="#333" />
               <Text style={styles.optionText}>Pin</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.optionItem}
-              onPress={handleDelete}
-            >
+            <TouchableOpacity style={styles.optionItem} onPress={handleDelete}>
               <Icon name="delete" size={20} color="#FF4444" />
               <Text style={[styles.optionText, { color: '#FF4444' }]}>Delete</Text>
             </TouchableOpacity>
@@ -246,10 +233,7 @@ const NotesScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
+  container: { flex: 1, backgroundColor: '#F8F9FA' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -258,10 +242,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     elevation: 2,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
+  title: { fontSize: 20, fontWeight: 'bold' },
   crown: {
     width: 40,
     height: 0,
@@ -270,6 +251,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
+  },
+  adContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
   },
   emptyContainer: {
     flex: 1,
@@ -282,19 +267,9 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
   },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#666',
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#999',
-    marginTop: 8,
-  },
-  notesList: {
-    padding: 16,
-  },
+  emptyText: { fontSize: 18, fontWeight: 'bold', color: '#666' },
+  emptySubtext: { fontSize: 14, color: '#999', marginTop: 8 },
+  notesList: { padding: 16 },
   noteCard: {
     backgroundColor: '#FFF',
     borderRadius: 12,
@@ -304,28 +279,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  pinnedNote: {
-    borderLeftWidth: 4,
-    borderLeftColor: '#6C63FF',
-  },
-  noteText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 4,
-  },
-  noteDate: {
-    fontSize: 12,
-    color: '#999',
-    marginBottom: 4,
-  },
-  notePreview: {
-    fontSize: 14,
-    color: '#666',
-  },
-  moreButton: {
-    padding: 4,
-  },
+  pinnedNote: { borderLeftWidth: 4, borderLeftColor: '#6C63FF' },
+  noteText: { fontSize: 16, fontWeight: '500', color: '#333', marginBottom: 4 },
+  noteDate: { fontSize: 12, color: '#999', marginBottom: 4 },
+  notePreview: { fontSize: 14, color: '#666' },
+  moreButton: { padding: 4 },
   addButton: {
     position: 'absolute',
     bottom: 24,
@@ -361,4 +319,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotesScreen; 
+export default NotesScreen;

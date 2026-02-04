@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, Share, Clipboard } from 'react-native';
+import React, { useState, useRef,useEffect } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image, Share, Clipboard, ScrollView } from 'react-native';
 import { WebView } from 'react-native-webview';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import BannerAdComponent from '../services/BannerAdComponent';
 
 const getCountryFlag = (countryCode) => {
   const codePoints = countryCode
@@ -141,7 +142,6 @@ const TranslationScreen = ({ navigation }) => {
       icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('PK')}</Text>
     }
   ];
-
   // Free translation function using Google Translate
   const translateText = async (text, targetLang) => {
     if (!text.trim()) {
@@ -204,160 +204,171 @@ const TranslationScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Translation</Text>
-        <View style={styles.crown}>
-          <Icon name="crown" size={24} color="white" />
-        </View>
-      </View>
-
-      <View style={styles.languageSelector}>
-        <View style={styles.dropdownContainer}>
-          <DropDownPicker
-            open={sourceOpen}
-            value={sourceLanguage}
-            items={languages}
-            setOpen={setSourceOpen}
-            setValue={setSourceLanguage}
-            style={styles.dropdown}
-            containerStyle={styles.dropdownList}
-            placeholder="Select language"
-            zIndex={2000}
-            listMode="MODAL"
-            modalProps={{
-              animationType: "slide"
-            }}
-            modalContentContainerStyle={styles.modalContent}
-            modalTitle="Select Source Language"
-            searchable={true}
-            searchPlaceholder="Search language..."
-            searchTextInputStyle={styles.searchInput}
-            searchContainerStyle={styles.searchContainer}
-            itemSeparator={true}
-            itemSeparatorStyle={styles.separator}
-          />
-        </View>
-
-        <View style={styles.arrowContainer}>
-          <MaterialCommunityIcons name="arrow-right" size={20} color="#FFF" />
-        </View>
-
-        <View style={styles.dropdownContainer}>
-          <DropDownPicker
-            open={targetOpen}
-            value={targetLanguage}
-            items={languages.filter(lang => lang.value !== 'auto')}
-            setOpen={setTargetOpen}
-            setValue={setTargetLanguage}
-            style={styles.dropdown}
-            containerStyle={styles.dropdownList}
-            placeholder="Select language"
-            zIndex={1000}
-            listMode="MODAL"
-            modalProps={{
-              animationType: "slide"
-            }}
-            modalContentContainerStyle={styles.modalContent}
-            modalTitle="Select Target Language"
-            searchable={true}
-            searchPlaceholder="Search language..."
-            searchTextInputStyle={styles.searchInput}
-            searchContainerStyle={styles.searchContainer}
-            itemSeparator={true}
-            itemSeparatorStyle={styles.separator}
-          />
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          multiline
-          placeholder="Type in here.."
-          placeholderTextColor="#999"
-          value={sourceText}
-          onChangeText={setSourceText}
-        />
-        <TouchableOpacity 
-          style={[styles.micButton, isListening && styles.micButtonActive]}
-          onPress={isListening ? handleStopListening : handleStartListening}
-        >
-          <Icon 
-            name={isListening ? "microphone" : "microphone-outline"} 
-            size={24} 
-            color="#FFF" 
-          />
-        </TouchableOpacity>
-      </View>
-
-      {translatedText ? (
-        <View style={styles.outputContainer}>
-          <Text style={styles.translatedText}>{translatedText}</Text>
-          <View style={styles.outputActions}>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={handleCopy}
-            >
-              <Icon name="content-copy" size={20} color="#666" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.actionButton}
-              onPress={handleShare}
-            >
-              <Icon name="share-variant" size={20} color="#666" />
-            </TouchableOpacity>
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Icon name="arrow-left" size={24} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Translation</Text>
+          <View style={styles.crown}>
+            <Icon name="crown" size={24} color="white" />
           </View>
         </View>
-      ) : null}
 
-      <TouchableOpacity 
-        style={[styles.translateButton, isLoading && styles.translateButtonDisabled]}
-        onPress={() => translateText(sourceText, targetLanguage)}
-        disabled={isLoading}
-      >
-        <Icon name="translate" size={24} color="#FFF" style={styles.translateIcon} />
-        <Text style={styles.translateButtonText}>
-          {isLoading ? 'Translating...' : 'Translate'}
-        </Text>
-      </TouchableOpacity>
+        <View style={styles.languageSelector}>
+          <View style={styles.dropdownContainer}>
+            <DropDownPicker
+              open={sourceOpen}
+              value={sourceLanguage}
+              items={languages}
+              setOpen={setSourceOpen}
+              setValue={setSourceLanguage}
+              style={styles.dropdown}
+              containerStyle={styles.dropdownList}
+              placeholder="Select language"
+              zIndex={2000}
+              listMode="MODAL"
+              modalProps={{
+                animationType: "slide"
+              }}
+              modalContentContainerStyle={styles.modalContent}
+              modalTitle="Select Source Language"
+              searchable={true}
+              searchPlaceholder="Search language..."
+              searchTextInputStyle={styles.searchInput}
+              searchContainerStyle={styles.searchContainer}
+              itemSeparator={true}
+              itemSeparatorStyle={styles.separator}
+            />
+          </View>
 
-      <WebView
-        ref={webViewRef}
-        source={{
-          html: `
-            <html>
-            <body>
-              <script>
-                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                recognition.lang = '${sourceLanguage}';
-                recognition.continuous = false;
-                recognition.interimResults = false;
+          <View style={styles.arrowContainer}>
+            <MaterialCommunityIcons name="arrow-right" size={20} color="#FFF" />
+          </View>
 
-                window.startListening = function() {
-                  recognition.start();
-                  recognition.onresult = function(event) {
-                    let text = event.results[0][0].transcript;
-                    window.ReactNativeWebView.postMessage(text);
+          <View style={styles.dropdownContainer}>
+            <DropDownPicker
+              open={targetOpen}
+              value={targetLanguage}
+              items={languages.filter(lang => lang.value !== 'auto')}
+              setOpen={setTargetOpen}
+              setValue={setTargetLanguage}
+              style={styles.dropdown}
+              containerStyle={styles.dropdownList}
+              placeholder="Select language"
+              zIndex={1000}
+              listMode="MODAL"
+              modalProps={{
+                animationType: "slide"
+              }}
+              modalContentContainerStyle={styles.modalContent}
+              modalTitle="Select Target Language"
+              searchable={true}
+              searchPlaceholder="Search language..."
+              searchTextInputStyle={styles.searchInput}
+              searchContainerStyle={styles.searchContainer}
+              itemSeparator={true}
+              itemSeparatorStyle={styles.separator}
+            />
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            multiline
+            placeholder="Type in here.."
+            placeholderTextColor="#999"
+            value={sourceText}
+            onChangeText={setSourceText}
+          />
+          <TouchableOpacity 
+            style={[styles.micButton, isListening && styles.micButtonActive]}
+            onPress={isListening ? handleStopListening : handleStartListening}
+          >
+            <Icon 
+              name={isListening ? "microphone" : "microphone-outline"} 
+              size={24} 
+              color="#FFF" 
+            />
+          </TouchableOpacity>
+        </View>
+
+        {translatedText ? (
+          <View style={styles.outputContainer}>
+            <Text style={styles.translatedText}>{translatedText}</Text>
+            <View style={styles.outputActions}>
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={handleCopy}
+              >
+                <Icon name="content-copy" size={20} color="#666" />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={handleShare}
+              >
+                <Icon name="share-variant" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+
+        <TouchableOpacity 
+          style={[styles.translateButton, isLoading && styles.translateButtonDisabled]}
+          onPress={() => translateText(sourceText, targetLanguage)}
+          disabled={isLoading}
+        >
+          <Icon name="translate" size={24} color="#FFF" style={styles.translateIcon} />
+          <Text style={styles.translateButtonText}>
+            {isLoading ? 'Translating...' : 'Translate'}
+          </Text>
+        </TouchableOpacity>
+
+        <WebView
+          ref={webViewRef}
+          source={{
+            html: `
+              <html>
+              <body>
+                <script>
+                  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                  recognition.lang = '${sourceLanguage}';
+                  recognition.continuous = false;
+                  recognition.interimResults = false;
+
+                  window.startListening = function() {
+                    recognition.start();
+                    recognition.onresult = function(event) {
+                      let text = event.results[0][0].transcript;
+                      window.ReactNativeWebView.postMessage(text);
+                    };
                   };
-                };
 
-                window.stopListening = function() {
-                  recognition.stop();
-                };
-              </script>
-            </body>
-            </html>
-          `,
-        }}
-        onMessage={(event) => {
-          setSourceText(event.nativeEvent.data);
-          setIsListening(false);
-        }}
-        style={{ height: 0 }}
-      />
+                  window.stopListening = function() {
+                    recognition.stop();
+                  };
+                </script>
+              </body>
+              </html>
+            `,
+          }}
+          onMessage={(event) => {
+            setSourceText(event.nativeEvent.data);
+            setIsListening(false);
+          }}
+          style={{ height: 0 }}
+        />
+      </ScrollView>
+
+      {/* Fixed Banner at Bottom */}
+      <View style={styles.fixedAdContainer}>
+        <BannerAdComponent/>
+      </View>
     </View>
   );
 };
@@ -366,7 +377,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 16,
+    paddingBottom: 20, // Extra padding to ensure content doesn't hide behind banner
   },
   header: {
     flexDirection: 'row',
@@ -478,6 +495,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 20,
   },
   translateButtonDisabled: {
     backgroundColor: '#A8A8A8',
@@ -514,6 +532,25 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F0F0F0',
   },
+  fixedAdContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    paddingVertical: 1,
+    borderTopWidth: 0,
+    borderTopColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+  }
 });
 
-export default TranslationScreen; 
+export default TranslationScreen;

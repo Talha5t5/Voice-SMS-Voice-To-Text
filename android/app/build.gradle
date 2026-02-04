@@ -23,11 +23,13 @@ android {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "2.2.0"
 
         // AdMob App ID placeholder (test ID here)
         manifestPlaceholders = [
+            //ADMOB_APP_ID: "ca-app-pub-3373899001969249~8758615353"
+            
             ADMOB_APP_ID: "ca-app-pub-3940256099942544~3347511713"
         ]
     }
@@ -39,9 +41,9 @@ android {
             keyPassword 'android'
         }
         release {
-                storeFile file('clean.jks')
+                storeFile file('wa.jks')
                 storePassword 'mnsuet.'   // <- Replace with real value
-                keyAlias 'clean'                // <- Replace with real value
+                keyAlias 'wa'                // <- Replace with real value
                 keyPassword 'mnsuet..'          // <- Replace with real value
             }
     }

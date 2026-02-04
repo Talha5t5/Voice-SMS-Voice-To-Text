@@ -13,7 +13,6 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-picker/picker": "^2.11.0",
-    "@react-native-voice/voice": "^3.2.4",
     "@react-navigation/native": "^7.0.18",
     "@react-navigation/stack": "^7.2.2",
     "axios": "^1.8.4",
@@ -28,20 +27,19 @@
     "react-native-linear-gradient": "^2.8.3",
     "react-native-paper": "^5.13.1",
     "react-native-safe-area-context": "^5.3.0",
-    "react-native-screens": "^4.10.0",
+    "react-native-screens": "^4.11.1",
     "react-native-svg": "^15.11.2",
     "react-native-vector-icons": "^10.2.0",
     "react-native-webview": "^13.13.5",
-    "react-world-flags": "^1.6.0",
-    "vosk": "^0.3.39"
+    "react-world-flags": "^1.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "15.0.1",
-    "@react-native-community/cli-platform-android": "15.0.1",
-    "@react-native-community/cli-platform-ios": "15.0.1",
+    "@react-native-community/cli": "^13.6.9",
+    "@react-native-community/cli-platform-android": "^13.6.9",
+    "@react-native-community/cli-platform-ios": "^13.6.9",
     "@react-native/babel-preset": "0.78.1",
     "@react-native/eslint-config": "0.78.1",
     "@react-native/metro-config": "0.78.1",

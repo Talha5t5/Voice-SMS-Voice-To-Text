@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,34 +10,30 @@ import {
   Alert,
   Clipboard,
 } from 'react-native';
+import BannerAdComponent from '../services/BannerAdComponent';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { WebView } from 'react-native-webview';
 import DropDownPicker from 'react-native-dropdown-picker';
 
+
+
 const platformUrls = {
-  // Communication
   Reddit: 'https://www.reddit.com/search?q=',
   Quora: 'https://www.quora.com/search?q=',
   Flipboard: 'https://flipboard.com/search/',
   MSN: 'https://www.msn.com/search?q=',
-
-  // Shopping
   Amazon: 'https://www.amazon.com/s?k=',
   AliBaba: 'https://www.alibaba.com/trade/search?SearchText=',
   'Daraz.pk': 'https://daraz.pk/catalog/?q=',
   OLX: 'https://www.olx.com/items?q=',
   Ebay: 'https://www.ebay.com/sch/i.html?_nkw=',
   AliExpress: 'https://www.aliexpress.com/wholesale?SearchText=',
-
-  // Social Media
   Facebook: 'https://www.facebook.com/search/top?q=',
   Instagram: 'https://www.instagram.com/explore/tags/',
   Twitter: 'https://twitter.com/search?q=',
   Youtube: 'https://www.youtube.com/results?search_query=',
   TikTok: 'https://www.tiktok.com/search?q=',
   Pinterest: 'https://www.pinterest.com/search/pins/?q=',
-
-  // Search Engines
   Google: 'https://www.google.com/search?q=',
   Bing: 'https://www.bing.com/search?q=',
   DuckDuckGo: 'https://duckduckgo.com/?q=',
@@ -97,8 +93,10 @@ const SearchInputScreen = ({ navigation, route }) => {
     webViewRef.current.injectJavaScript(`stopListening();`);
   };
 
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={24} color="#000" />
@@ -109,7 +107,9 @@ const SearchInputScreen = ({ navigation, route }) => {
         </View>
       </View>
 
+      {/* Main Content */}
       <View style={styles.content}>
+        {/* Language Picker */}
         <View style={styles.languagePickerContainer}>
           <DropDownPicker
             open={openLanguage}
@@ -119,11 +119,12 @@ const SearchInputScreen = ({ navigation, route }) => {
             setValue={setSelectedLanguage}
             style={styles.languagePicker}
             dropDownContainerStyle={styles.dropDownContainer}
-            searchable={true}
+            searchable
             searchPlaceholder="Search language..."
           />
         </View>
 
+        {/* Search Card */}
         <View style={styles.searchCard}>
           <TextInput
             style={styles.textInput}
@@ -143,11 +144,13 @@ const SearchInputScreen = ({ navigation, route }) => {
           </View>
         </View>
 
+        {/* Search Button */}
         <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
           <Icon name="magnify" size={24} color="#FFF" />
           <Text style={styles.searchButtonText}>Search</Text>
         </TouchableOpacity>
 
+        {/* Mic Button */}
         <TouchableOpacity
           style={[styles.micButton, isListening && styles.micButtonActive]}
           onPress={isListening ? stopListening : startListening}
@@ -156,6 +159,7 @@ const SearchInputScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Speech Recognition WebView */}
       <WebView
         ref={webViewRef}
         source={{ html: `
@@ -173,6 +177,11 @@ const SearchInputScreen = ({ navigation, route }) => {
         onMessage={e => { setSearchText(e.nativeEvent.data); setIsListening(false); }}
         style={{ height: 0 }}
       />
+
+      {/* Fixed Banner Ad at Bottom */}
+      <View style={styles.fixedAdContainer}>
+        <BannerAdComponent/>
+      </View>
     </SafeAreaView>
   );
 };
@@ -183,7 +192,7 @@ const styles = StyleSheet.create({
   backButton: { padding: 8 },
   headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#333' },
   crown: { width: 40, height: 0, backgroundColor: 'white', borderRadius: 0, justifyContent: 'center', alignItems: 'center', elevation: 2 },
-  content: { flex: 1, padding: 16, alignItems: 'center' },
+  content: { flex: 1, padding: 16, alignItems: 'center', paddingBottom: 400 },
   languagePickerContainer: { width: '100%', marginBottom: 20 },
   languagePicker: { backgroundColor: '#FFF', borderColor: '#E0E0E0', borderRadius: 12 },
   dropDownContainer: { backgroundColor: '#FFF', borderColor: '#E0E0E0', borderRadius: 12, elevation: 4 },
@@ -198,10 +207,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     borderRadius: 30,
-    marginBottom: 12,
+    marginBottom: 20,
     zIndex: 2,
     elevation: 4,
-    position: 'relative',
     width: '80%',
   },
   searchButtonText: { color: '#FFF', fontSize: 18, fontWeight: '600', marginLeft: 8 },
@@ -213,11 +221,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 2,
-    zIndex: 1,
-    position: 'relative',
     marginTop: 8,
   },
   micButtonActive: { backgroundColor: '#FF4444' },
+  fixedAdContainer: { 
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    paddingVertical: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
 });
 
 export default SearchInputScreen;

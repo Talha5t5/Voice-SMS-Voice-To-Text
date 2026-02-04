@@ -11,6 +11,7 @@ import {
   PermissionsAndroid,
   Platform
 } from 'react-native';
+import BannerAdComponent from '../services/BannerAdComponent';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,6 +27,7 @@ const VoiceRecordingScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadRecordings();
+
     return () => {
       stopRecording();
       stopPlaying();
@@ -69,9 +71,7 @@ const VoiceRecordingScreen = ({ navigation }) => {
   };
 
   const startRecording = async () => {
-    if (!await checkPermission()) {
-      return;
-    }
+    if (!await checkPermission()) return;
 
     const path = Platform.select({
       ios: 'recording.m4a',
@@ -79,7 +79,7 @@ const VoiceRecordingScreen = ({ navigation }) => {
     });
 
     try {
-      const result = await audioRecorderPlayer.startRecorder(path);
+      await audioRecorderPlayer.startRecorder(path);
       audioRecorderPlayer.addRecordBackListener((e) => {
         setRecordTime(audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)));
       });
@@ -96,7 +96,7 @@ const VoiceRecordingScreen = ({ navigation }) => {
     try {
       const result = await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
-      
+
       const newRecording = {
         id: Date.now().toString(),
         uri: result,
@@ -104,7 +104,7 @@ const VoiceRecordingScreen = ({ navigation }) => {
         date: new Date().toISOString(),
         name: `Recording ${new Date().toLocaleString()}`,
       };
-      
+
       const updatedRecordings = [...recordings, newRecording];
       await AsyncStorage.setItem('recordings', JSON.stringify(updatedRecordings));
       setRecordings(updatedRecordings);
@@ -201,6 +201,10 @@ const VoiceRecordingScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.adContainer}>
+        <BannerAdComponent/>
+      </View>
+
       <View style={styles.timerContainer}>
         <Text style={styles.timer}>{recordTime}</Text>
         <Text style={styles.recordingStatus}>
@@ -214,10 +218,7 @@ const VoiceRecordingScreen = ({ navigation }) => {
             {[...Array(20)].map((_, i) => (
               <View 
                 key={i} 
-                style={[
-                  styles.waveformBar,
-                  { height: Math.random() * 50 + 10 }
-                ]} 
+                style={[styles.waveformBar, { height: Math.random() * 50 + 10 }]} 
               />
             ))}
           </View>
@@ -239,35 +240,22 @@ const VoiceRecordingScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFF',
-  },
+  container: { flex: 1, backgroundColor: '#FFF' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  timerContainer: {
-    alignItems: 'center',
-    marginTop: 60,
-  },
+  title: { fontSize: 20, fontWeight: 'bold' },
+  timerContainer: { alignItems: 'center', marginTop: 60 },
   timer: {
     fontSize: 64,
     fontWeight: 'bold',
     color: '#000',
     fontVariant: ['tabular-nums'],
   },
-  recordingStatus: {
-    fontSize: 18,
-    color: '#666',
-    marginTop: 8,
-  },
+  recordingStatus: { fontSize: 18, color: '#666', marginTop: 8 },
   waveformContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -303,24 +291,9 @@ const styles = StyleSheet.create({
   recordingActive: {
     backgroundColor: '#FF4444',
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: '#FFF',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  adContainer: {
     alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  recordingsList: {
-    padding: 16,
+    marginVertical: 10,
   },
   recordingItem: {
     flexDirection: 'row',
@@ -330,26 +303,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
   },
-  playButton: {
-    padding: 8,
-  },
-  recordingInfo: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  recordingDate: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-  },
-  recordingDuration: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  deleteButton: {
-    padding: 8,
-  },
+  playButton: { padding: 8 },
+  recordingInfo: { flex: 1, marginLeft: 16 },
+  recordingDate: { fontSize: 16, fontWeight: '500', color: '#333' },
+  recordingDuration: { fontSize: 14, color: '#666', marginTop: 4 },
+  deleteButton: { padding: 8 },
 });
 
-export default VoiceRecordingScreen; 
+export default VoiceRecordingScreen;

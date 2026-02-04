@@ -8,15 +8,27 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import { InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 
-// Replace with your splash image or logo
 const SPLASH_IMAGE = require('./assets/splash.jpg');
+//const adUnitId = __DEV__
+//  ? TestIds.INTERSTITIAL
+//: 'ca-app-pub-3373899001969249/6549827367';
+const adUnitId = TestIds.INTERSTITIAL;
+
+const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+});
 
 const SplashScreen = ({ navigation }) => {
   useEffect(() => {
+    // Load the ad here (do NOT show it)
+    interstitial.load();
+
     const timer = setTimeout(() => {
       navigation.replace('HomeScreen');
     }, 3000);
+
     return () => clearTimeout(timer);
   }, [navigation]);
 
@@ -36,6 +48,7 @@ const SplashScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

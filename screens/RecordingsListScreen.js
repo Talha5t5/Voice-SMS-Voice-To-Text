@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,16 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
+import BannerAdComponent from '../services/BannerAdComponent';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
+
+// Replace with your real interstitial ad unit ID
+
 
 const RecordingsListScreen = ({ navigation }) => {
   const [recordings, setRecordings] = useState([]);
@@ -24,7 +28,7 @@ const RecordingsListScreen = ({ navigation }) => {
   const [selectedRecording, setSelectedRecording] = useState(null);
   const [newName, setNewName] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadRecordings();
     return () => {
       stopPlaying();
@@ -101,12 +105,12 @@ const RecordingsListScreen = ({ navigation }) => {
     }
 
     try {
-      const updatedRecordings = recordings.map(rec => 
-        rec.id === selectedRecording.id 
+      const updatedRecordings = recordings.map(rec =>
+        rec.id === selectedRecording.id
           ? { ...rec, name: newName.trim() }
           : rec
       );
-      
+
       await AsyncStorage.setItem('recordings', JSON.stringify(updatedRecordings));
       setRecordings(updatedRecordings);
       setIsRenameModalVisible(false);
@@ -118,18 +122,18 @@ const RecordingsListScreen = ({ navigation }) => {
 
   const renderRecordingItem = ({ item }) => (
     <View style={styles.recordingItem}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.playButton}
         onPress={() => currentPlayingId === item.id ? stopPlaying() : playRecording(item.uri, item.id)}
       >
-        <Icon 
-          name={currentPlayingId === item.id ? "pause" : "play"} 
-          size={24} 
-          color="#6C63FF" 
+        <Icon
+          name={currentPlayingId === item.id ? "pause" : "play"}
+          size={24}
+          color="#6C63FF"
         />
       </TouchableOpacity>
-      
-      <TouchableOpacity 
+
+      <TouchableOpacity
         style={styles.recordingInfo}
         onPress={() => showRenameModal(item)}
       >
@@ -147,13 +151,13 @@ const RecordingsListScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <View style={styles.actionButtons}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.editButton}
           onPress={() => showRenameModal(item)}
         >
           <Icon name="pencil" size={20} color="#6C63FF" />
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.deleteButton}
           onPress={() => deleteRecording(item.id)}
         >
@@ -165,27 +169,30 @@ const RecordingsListScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-left" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.title}>My Recordings</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
-      {recordings.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Icon name="playlist-music" size={64} color="#CCC" />
-          <Text style={styles.emptyText}>No recordings yet</Text>
+      <View style={styles.contentContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={24} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.title}>My Recordings</Text>
+          <View style={{ width: 24 }} />
         </View>
-      ) : (
-        <FlatList
-          data={recordings}
-          renderItem={renderRecordingItem}
-          keyExtractor={item => item.id}
-          contentContainerStyle={styles.recordingsList}
-        />
-      )}
+
+        {recordings.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Icon name="playlist-music" size={64} color="#CCC" />
+            <Text style={styles.emptyText}>No recordings yet</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={recordings}
+            renderItem={renderRecordingItem}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.recordingsList}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </View>
 
       {/* Rename Modal */}
       <Modal
@@ -205,13 +212,13 @@ const RecordingsListScreen = ({ navigation }) => {
               autoFocus
             />
             <View style={styles.modalButtons}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.modalButton, styles.cancelButton]}
                 onPress={() => setIsRenameModalVisible(false)}
               >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.modalButton, styles.saveButton]}
                 onPress={handleRename}
               >
@@ -221,157 +228,185 @@ const RecordingsListScreen = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Fixed Banner at Bottom */}
+      <View style={styles.fixedAdContainer}>
+        <BannerAdComponent />
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  container: { 
+    flex: 1, 
+    backgroundColor: '#FFF' 
+  },
+  contentContainer: {
     flex: 1,
-    backgroundColor: '#FFF',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
     alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEE',
+    padding: 16, 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#EEE'
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
+  title: { 
+    fontSize: 20, 
+    fontWeight: 'bold', 
+    color: '#000' 
   },
-  recordingsList: {
+  recordingsList: { 
     padding: 16,
+    paddingBottom: 20, // Extra padding to ensure content doesn't hide behind banner
   },
   recordingItem: {
-    flexDirection: 'row',
+    flexDirection: 'row', 
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#F8F9FA',
+    padding: 16, 
+    backgroundColor: '#F8F9FA', 
     borderRadius: 12,
-    marginBottom: 12,
+    marginBottom: 12, 
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.2, 
     shadowRadius: 2,
   },
   playButton: {
-    padding: 8,
-    backgroundColor: '#FFF',
-    borderRadius: 20,
+    padding: 8, 
+    backgroundColor: '#FFF', 
+    borderRadius: 20, 
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.2, 
     shadowRadius: 1,
   },
-  recordingInfo: {
-    flex: 1,
-    marginLeft: 16,
+  recordingInfo: { 
+    flex: 1, 
+    marginLeft: 16 
   },
-  recordingName: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 4,
+  recordingName: { 
+    fontSize: 16, 
+    fontWeight: '500', 
+    color: '#333', 
+    marginBottom: 4 
   },
-  recordingDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  recordingDetails: { 
+    flexDirection: 'row', 
+    alignItems: 'center' 
   },
-  recordingDate: {
-    fontSize: 14,
-    color: '#666',
-    marginRight: 8,
+  recordingDate: { 
+    fontSize: 14, 
+    color: '#666', 
+    marginRight: 8 
   },
-  recordingDuration: {
-    fontSize: 14,
-    color: '#666',
+  recordingDuration: { 
+    fontSize: 14, 
+    color: '#666' 
   },
-  actionButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  actionButtons: { 
+    flexDirection: 'row', 
+    alignItems: 'center' 
   },
-  editButton: {
-    padding: 8,
-    marginRight: 8,
+  editButton: { 
+    padding: 8, 
+    marginRight: 8 
   },
-  deleteButton: {
-    padding: 8,
+  deleteButton: { 
+    padding: 8 
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  emptyContainer: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
   },
-  emptyText: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 16,
+  emptyText: { 
+    fontSize: 16, 
+    color: '#666', 
+    marginTop: 16 
   },
   modalOverlay: {
-    flex: 1,
+    flex: 1, 
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center', 
+    alignItems: 'center'
   },
   modalContent: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFF', 
     borderRadius: 16,
-    padding: 20,
-    width: '80%',
+    padding: 20, 
+    width: '80%', 
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.25, 
     shadowRadius: 4,
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 18, 
+    fontWeight: 'bold', 
     marginBottom: 16,
-    color: '#333',
+    color: '#333', 
     textAlign: 'center',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#DDD',
+    borderWidth: 1, 
+    borderColor: '#DDD', 
     borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
+    padding: 12, 
+    fontSize: 16, 
     marginBottom: 16,
   },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  modalButtons: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between' 
   },
   modalButton: {
-    flex: 1,
-    padding: 12,
+    flex: 1, 
+    padding: 12, 
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: 'center', 
     marginHorizontal: 8,
   },
-  cancelButton: {
-    backgroundColor: '#F5F5F5',
+  cancelButton: { 
+    backgroundColor: '#F5F5F5' 
   },
-  saveButton: {
-    backgroundColor: '#6C63FF',
+  saveButton: { 
+    backgroundColor: '#6C63FF' 
   },
-  cancelButtonText: {
-    color: '#666',
-    fontSize: 16,
-    fontWeight: '500',
+  cancelButtonText: { 
+    color: '#666', 
+    fontSize: 16, 
+    fontWeight: '500' 
   },
-  saveButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '500',
+  saveButtonText: { 
+    color: '#FFF', 
+    fontSize: 16, 
+    fontWeight: '500' 
   },
+  fixedAdContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    paddingVertical: 0,
+    borderTopWidth: 0,
+    borderTopColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 5,
+  }
 });
 
-export default RecordingsListScreen; 
+export default RecordingsListScreen;

@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Clipboard, Image, Animated, Alert } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Clipboard, Animated, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BannerAdComponent from '../services/BannerAdComponent';
 
-// Add the getCountryFlag function from TranslationScreen
+// Get country flag emoji from code
 const getCountryFlag = (countryCode) => {
   const codePoints = countryCode
     .toUpperCase()
@@ -28,78 +28,23 @@ const VoiceToTextScreen = ({ navigation }) => {
     new Animated.Value(0.3)
   ]);
 
-  // Updated languages array
+ 
+
   const languages = [
-    { 
-      label: 'English (US)', 
-      value: 'en-US', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('US')}</Text>
-    },
-    { 
-      label: 'Spanish', 
-      value: 'es-ES', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('ES')}</Text>
-    },
-    { 
-      label: 'French', 
-      value: 'fr-FR', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('FR')}</Text>
-    },
-    { 
-      label: 'German', 
-      value: 'de-DE', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('DE')}</Text>
-    },
-    { 
-      label: 'Italian', 
-      value: 'it-IT', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('IT')}</Text>
-    },
-    { 
-      label: 'Portuguese', 
-      value: 'pt-PT', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('PT')}</Text>
-    },
-    { 
-      label: 'Russian', 
-      value: 'ru-RU', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('RU')}</Text>
-    },
-    { 
-      label: 'Chinese', 
-      value: 'zh-CN', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('CN')}</Text>
-    },
-    { 
-      label: 'Japanese', 
-      value: 'ja-JP', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('JP')}</Text>
-    },
-    { 
-      label: 'Korean', 
-      value: 'ko-KR', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('KR')}</Text>
-    },
-    { 
-      label: 'Arabic', 
-      value: 'ar-SA', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('SA')}</Text>
-    },
-    { 
-      label: 'Hindi', 
-      value: 'hi-IN', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('IN')}</Text>
-    },
-    { 
-      label: 'Urdu', 
-      value: 'ur-PK', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('PK')}</Text>
-    },
-    { 
-      label: 'Turkish', 
-      value: 'tr-TR', 
-      icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('TR')}</Text>
-    }
+    { label: 'English (US)', value: 'en-US', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('US')}</Text> },
+    { label: 'Spanish', value: 'es-ES', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('ES')}</Text> },
+    { label: 'French', value: 'fr-FR', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('FR')}</Text> },
+    { label: 'German', value: 'de-DE', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('DE')}</Text> },
+    { label: 'Italian', value: 'it-IT', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('IT')}</Text> },
+    { label: 'Portuguese', value: 'pt-PT', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('PT')}</Text> },
+    { label: 'Russian', value: 'ru-RU', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('RU')}</Text> },
+    { label: 'Chinese', value: 'zh-CN', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('CN')}</Text> },
+    { label: 'Japanese', value: 'ja-JP', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('JP')}</Text> },
+    { label: 'Korean', value: 'ko-KR', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('KR')}</Text> },
+    { label: 'Arabic', value: 'ar-SA', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('SA')}</Text> },
+    { label: 'Hindi', value: 'hi-IN', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('IN')}</Text> },
+    { label: 'Urdu', value: 'ur-PK', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('PK')}</Text> },
+    { label: 'Turkish', value: 'tr-TR', icon: () => <Text style={styles.flagEmoji}>{getCountryFlag('TR')}</Text> }
   ];
 
   const animateDots = () => {
@@ -119,9 +64,7 @@ const VoiceToTextScreen = ({ navigation }) => {
       ]);
     });
 
-    Animated.loop(
-      Animated.parallel(animations)
-    ).start();
+    Animated.loop(Animated.parallel(animations)).start();
   };
 
   const handleStartListening = () => {
@@ -135,7 +78,6 @@ const VoiceToTextScreen = ({ navigation }) => {
     webViewRef.current.injectJavaScript(`stopListening();`);
   };
 
-  // Add clipboard handling
   const handleCopy = async () => {
     try {
       await Clipboard.setString(transcription);
@@ -149,18 +91,14 @@ const VoiceToTextScreen = ({ navigation }) => {
     try {
       const savedNotes = await AsyncStorage.getItem('notes');
       const existingNotes = savedNotes ? JSON.parse(savedNotes) : [];
-      
       const newNote = {
         id: Date.now().toString(),
         content: text,
         date: new Date().toISOString(),
         pinned: false,
       };
-
       const updatedNotes = [...existingNotes, newNote];
       await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
-      
-      // Navigate back to Notes screen
       navigation.navigate('Notes');
     } catch (error) {
       console.error('Error saving note:', error);
@@ -168,134 +106,132 @@ const VoiceToTextScreen = ({ navigation }) => {
     }
   };
 
-  return (
+   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Voice To Text</Text>
-        <View style={styles.crown}>
-          <Icon name="crown" size={1} color="white" />
-        </View>
-      </View>
-
-      <DropDownPicker
-        open={openDropdown}
-        setOpen={setOpenDropdown}
-        value={language}
-        setValue={setLanguage}
-        items={languages}
-        style={styles.dropdown}
-        containerStyle={styles.dropdownContainer}
-        listMode="MODAL"
-        modalProps={{
-          animationType: "slide"
-        }}
-        modalContentContainerStyle={styles.modalContent}
-        modalTitle="Select Language"
-        searchable={true}
-        searchPlaceholder="Search language..."
-        searchTextInputStyle={styles.searchInput}
-        searchContainerStyle={styles.searchContainer}
-        itemSeparator={true}
-        itemSeparatorStyle={styles.separator}
-      />
-
-      <View style={styles.textBox}>
-        <TextInput
-          placeholder="Speak to add text here"
-          placeholderTextColor="#999"
-          value={transcription}
-          onChangeText={setTranscription}
-          multiline
-          style={styles.input}
-        />
-        <View style={styles.textBoxIcons}>
-          <TouchableOpacity onPress={() => setTranscription('')} style={styles.iconButton}>
-            <Icon name="delete" size={24} color="#666" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleCopy} style={styles.iconButton}>
-            <Icon name="content-copy" size={24} color="#666" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => saveNote(transcription)}
-        >
-          <Icon name="content-save" size={20} color="#FFF" style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={[styles.micButton, isListening && styles.micButtonActive]}
-        onPress={isListening ? handleStopListening : handleStartListening}
+      {/* Main content area */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.content}
       >
-        <Icon 
-          name={isListening ? "microphone" : "microphone-outline"} 
-          size={32} 
-          color="#FFF" 
-        />
-      </TouchableOpacity>
-
-      {isListening && (
-        <View style={styles.waveformContainer}>
-          <View style={styles.listeningIndicator}>
-            <Text style={styles.listeningText}>Listening...</Text>
-            <View style={styles.dots}>
-              {dotOpacities.map((opacity, index) => (
-                <Animated.Text 
-                  key={index} 
-                  style={[
-                    styles.dot,
-                    { opacity }
-                  ]}
-                >
-                  ●
-                </Animated.Text>
-              ))}
-            </View>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Icon name="arrow-left" size={24} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Voice To Text</Text>
+          <View style={styles.crown}>
+            <Icon name="crown" size={1} color="white" />
           </View>
         </View>
-      )}
 
-<WebView
-  ref={webViewRef}
-  source={{
-    html: `
-      <html>
-      <body>
-        <script>
-          const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-          recognition.lang = '${language}';
+        <DropDownPicker
+          open={openDropdown}
+          setOpen={setOpenDropdown}
+          value={language}
+          setValue={setLanguage}
+          items={languages}
+          style={styles.dropdown}
+          containerStyle={styles.dropdownContainer}
+          listMode="MODAL"
+          modalProps={{ animationType: "slide" }}
+          modalContentContainerStyle={styles.modalContent}
+          modalTitle="Select Language"
+          searchable={true}
+          searchPlaceholder="Search language..."
+          searchTextInputStyle={styles.searchInput}
+          searchContainerStyle={styles.searchContainer}
+          itemSeparator={true}
+          itemSeparatorStyle={styles.separator}
+        />
 
-          window.startListening = function() {
-            recognition.start();
-            recognition.onresult = function(event) {
-              let text = event.results[0][0].transcript;
-              window.ReactNativeWebView.postMessage(text);
-            };
-          };
+        <View style={styles.textBox}>
+          <TextInput
+            placeholder="Speak to add text here"
+            placeholderTextColor="#999"
+            value={transcription}
+            onChangeText={setTranscription}
+            multiline
+            style={styles.input}
+          />
+          <View style={styles.textBoxIcons}>
+            <TouchableOpacity onPress={() => setTranscription('')} style={styles.iconButton}>
+              <Icon name="delete" size={24} color="#666" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleCopy} style={styles.iconButton}>
+              <Icon name="content-copy" size={24} color="#666" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-          window.stopListening = function() {
-            recognition.stop();
-          };
-        </script>
-      </body>
-      </html>
-    `,
-  }}
-  onMessage={(event) => {
-    setTranscription(prevText => prevText + ' ' + event.nativeEvent.data);
-    setIsListening(false);
-  }}
-  style={{ height: 0 }}
-/>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => saveNote(transcription)}
+          >
+            <Icon name="content-save" size={20} color="#FFF" style={styles.buttonIcon} />
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+        </View>
 
+        <TouchableOpacity
+          style={[styles.micButton, isListening && styles.micButtonActive]}
+          onPress={isListening ? handleStopListening : handleStartListening}
+        >
+          <Icon
+            name={isListening ? "microphone" : "microphone-outline"}
+            size={32}
+            color="#FFF"
+          />
+        </TouchableOpacity>
+
+        {isListening && (
+          <View style={styles.waveformContainer}>
+            <View style={styles.listeningIndicator}>
+              <Text style={styles.listeningText}>Listening...</Text>
+              <View style={styles.dots}>
+                {dotOpacities.map((opacity, index) => (
+                  <Animated.Text key={index} style={[styles.dot, { opacity }]}>●</Animated.Text>
+                ))}
+              </View>
+            </View>
+          </View>
+        )}
+
+        <WebView
+          ref={webViewRef}
+          source={{
+            html: `
+              <html>
+              <body>
+                <script>
+                  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                  recognition.lang = '${language}';
+                  window.startListening = function() {
+                    recognition.start();
+                    recognition.onresult = function(event) {
+                      let text = event.results[0][0].transcript;
+                      window.ReactNativeWebView.postMessage(text);
+                    };
+                  };
+                  window.stopListening = function() {
+                    recognition.stop();
+                  };
+                </script>
+              </body>
+              </html>
+            `,
+          }}
+          onMessage={(event) => {
+            setTranscription(prev => prev + ' ' + event.nativeEvent.data);
+            setIsListening(false);
+          }}
+          style={{ height: 0 }}
+        />
+      </KeyboardAvoidingView>
+
+      {/* Banner fixed at bottom */}
+      <View style={styles.adContainer}>
+        <BannerAdComponent />
+      </View>
     </View>
   );
 };
@@ -304,6 +240,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
+  },
+  content: {
+    flex: 1,
+    paddingBottom: 90, // enough space for the banner height + some margin
   },
   header: {
     flexDirection: 'row',
@@ -340,7 +280,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 15,
     borderWidth: 1,
-    borderColor: '#E0E0E0'
+    borderColor: '#E0E0E0',
   },
   textBoxIcons: {
     flexDirection: 'row',
@@ -351,7 +291,7 @@ const styles = StyleSheet.create({
     minHeight: 100,
     color: '#333',
     textAlignVertical: 'top',
-    padding: 0
+    padding: 0,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -447,7 +387,18 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F0F0F0',
   },
+  adContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,   // set height of banner ad here
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
 });
 
 export default VoiceToTextScreen;
-
